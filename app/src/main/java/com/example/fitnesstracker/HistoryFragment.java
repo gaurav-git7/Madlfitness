@@ -74,18 +74,16 @@ public class HistoryFragment extends Fragment {
                             int position = viewHolder.getAdapterPosition();
                             WorkoutSession deletedSession = sessions.get(position);
 
-                            // Remove from Adapter and Manager
+                            // Remove from Adapter (which also removes from the shared list)
                             adapter.removeItem(position);
-                            WorkoutManager.getInstance().removeWorkout(position);
 
                             // Show Snackbar with Undo
                             com.google.android.material.snackbar.Snackbar
                                     .make(rvHistory, "Workout deleted",
                                             com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
                                     .setAction("Undo", v -> {
-                                        // Restore to Adapter and Manager
+                                        // Restore to Adapter (which also restores to the shared list)
                                         adapter.restoreItem(deletedSession, position);
-                                        WorkoutManager.getInstance().addWorkout(position, deletedSession);
                                     }).show();
                         }
                     }).attachToRecyclerView(rvHistory);

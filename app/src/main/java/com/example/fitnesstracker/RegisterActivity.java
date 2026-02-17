@@ -28,17 +28,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = "RegisterActivity";
     private static final String PREFS_NAME = "AppPreferences";
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private TextInputEditText etEmail, etPassword;
-    private Button btnLogin, btnGoogleSignIn;
+    private TextInputEditText etEmail, etPassword, etConfirmPassword;
+    private Button btnSignUp, btnGoogleSignIn;
     private ProgressBar progressBar;
-    private TextView tvSignUp;
+    private TextView tvLogin;
 
     // Activity Result Launcher for Google Sign-In
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
         // 1. Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -72,17 +72,19 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // 3. Bind views
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        btnLogin = findViewById(R.id.btnLogin);
+        etEmail = findViewById(R.id.etRegEmail);
+        etPassword = findViewById(R.id.etRegPassword);
+        etConfirmPassword = findViewById(R.id.etRegConfirmPassword);
+        btnSignUp = findViewById(R.id.btnSignUp);
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
-        progressBar = findViewById(R.id.progressBar);
-        tvSignUp = findViewById(R.id.tvSignUp);
+        progressBar = findViewById(R.id.progressBarRegister);
+        tvLogin = findViewById(R.id.tvLogin);
 
-        // 4. Login button click
-        btnLogin.setOnClickListener(v -> {
+        // 4. Sign Up button click
+        btnSignUp.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
+            String confirmPassword = etConfirmPassword.getText().toString().trim();
 
             if (TextUtils.isEmpty(email)) {
                 etEmail.setError("Email is required");
@@ -99,45 +101,51 @@ public class LoginActivity extends AppCompatActivity {
                 etPassword.requestFocus();
                 return;
             }
+            if (!password.equals(confirmPassword)) {
+                etConfirmPassword.setError("Passwords do not match");
+                etConfirmPassword.requestFocus();
+                return;
+            }
 
-            loginUser(email, password);
+            registerUser(email, password);
         });
 
         // 5. Google Sign-In button click
         btnGoogleSignIn.setOnClickListener(v -> signInWithGoogle());
 
-        // 6. Sign Up link click
-        tvSignUp.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        // 6. Login link click
+        tvLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         });
     }
 
-    private void loginUser(String email, String password) {
+    private void registerUser(String email, String password) {
         progressBar.setVisibility(View.VISIBLE);
-        btnLogin.setEnabled(false);
+        btnSignUp.setEnabled(false);
 
-        mAuth.signInWithEmailAndPassword(email, password)
+        mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     progressBar.setVisibility(View.GONE);
-                    btnLogin.setEnabled(true);
+                    btnSignUp.setEnabled(true);
 
                     if (task.isSuccessful()) {
-                        Log.d(TAG, "signInWithEmail:success");
+                        Log.d(TAG, "createUserWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
                             saveLocalPreferences(user.getUid(), user.getEmail());
                         }
-                        Toast.makeText(LoginActivity.this, "Login successful!",
+                        Toast.makeText(RegisterActivity.this,
+                                "Registration successful! Welcome!",
                                 Toast.LENGTH_SHORT).show();
                         navigateToMain();
                     } else {
-                        Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         String errorMessage = task.getException() != null
                                 ? task.getException().getMessage()
-                                : "Authentication failed.";
-                        Toast.makeText(LoginActivity.this, errorMessage,
+                                : "Registration failed.";
+                        Toast.makeText(RegisterActivity.this, errorMessage,
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -173,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void navigateToMain() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
@@ -192,6 +200,6 @@ public class LoginActivity extends AppCompatActivity {
         editor.putInt("DEFAULT_TIMER_MINUTES", 25);
 
         editor.apply();
-        Log.d("Prefs", "Local preferences saved for user: " + userId);
+        Log.d("Prefs", "Local preferences saved for new user: " + userId);
     }
 }

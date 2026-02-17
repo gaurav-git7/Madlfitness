@@ -4,9 +4,9 @@
         <shape
             android:innerRadiusRatio="3"
             android:shape="ring"
-            android:thicknessRatio="20"
+            android:thicknessRatio="15"
             android:useLevel="false">
-            <solid android:color="#EEEEEE" />
+            <solid android:color="#222233" />
         </shape>
     </item>
     <item android:id="@android:id/progress">
@@ -16,11 +16,11 @@
             <shape
                 android:innerRadiusRatio="3"
                 android:shape="ring"
-                android:thicknessRatio="20"
+                android:thicknessRatio="15"
                 android:useLevel="true">
                 <gradient
-                    android:endColor="#4CAF50"
-                    android:startColor="#81C784"
+                    android:endColor="#00E676"
+                    android:startColor="#00C853"
                     android:type="sweep" />
             </shape>
         </rotate>

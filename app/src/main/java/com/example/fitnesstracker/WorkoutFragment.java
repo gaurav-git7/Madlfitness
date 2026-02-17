@@ -78,28 +78,27 @@ public class WorkoutFragment extends Fragment {
 
         // Laps Logic
         final android.widget.TextView tvLaps = view.findViewById(R.id.tvLaps);
-        final android.view.GestureDetector gestureDetector = new android.view.GestureDetector(getContext(),
-                new android.view.GestureDetector.SimpleOnGestureListener() {
-                    @Override
-                    public boolean onDoubleTap(android.view.MotionEvent e) {
-                        if (running) {
-                            String currentLaps = tvLaps.getText().toString();
-                            if (currentLaps.contains("Double-tap"))
-                                currentLaps = "";
+        Button btnLap = view.findViewById(R.id.btnLap);
 
-                            String timestamp = tvTimer.getText().toString();
-                            int lapCount = currentLaps.split("\n").length + 1;
+        btnLap.setOnClickListener(v -> {
+            if (running) {
+                String currentLaps = tvLaps.getText().toString();
+                if (currentLaps.contains("Press Lap"))
+                    currentLaps = "";
 
-                            String newLap = String.format(Locale.getDefault(), "Lap %d: %s\n", lapCount, timestamp);
-                            tvLaps.setText(currentLaps + newLap);
+                String timestamp = tvTimer.getText().toString();
+                int lapCount = currentLaps.split("\n").length + 1;
 
-                            Toast.makeText(getContext(), "Lap Recorded!", Toast.LENGTH_SHORT).show();
-                        }
-                        return true;
-                    }
-                });
+                String newLap = String.format(Locale.getDefault(), "Lap %d: %s\n", lapCount, timestamp);
+                tvLaps.setText(currentLaps + newLap);
 
-        tvTimer.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+                Toast.makeText(getContext(), "Lap Recorded!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Start timer to record laps", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Removed GestureDetector execution
 
         return view;
     }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FitnessTracker</string>
+    <string name="default_web_client_id">358869953566-8vq49lva1j8c7lur716r1bg6mjn0a08p.apps.googleusercontent.com</string>
 </resources>
